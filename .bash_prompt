@@ -4,7 +4,6 @@
 git_branch() {
     branch_status=$(git branch 2>/dev/null -vv | sed -e '/^[^*]/d' | grep -Eio '\[.*\]' | sed 's/[][]//g')
     branch_name=$(git branch 2>/dev/null | sed -e '/^[^*]/d'  | awk '{ print $2 }')
-    
     if [ -d .git ]; then
         echo " ($branch_name | $branch_status)";
     else
