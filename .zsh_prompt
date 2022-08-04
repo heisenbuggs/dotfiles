@@ -1,0 +1,16 @@
+function git_branch() {
+    branch_status=$(git branch 2>/dev/null -vv | sed -e '/^[^]/d' | grep -Eio '\[.\]' | sed 's/[][]//g')
+    branch_name=$(git branch 2>/dev/null | sed -e '/^[^*]/d'  | awk '{ print $2 }')
+    if [ -d .git ]; then
+        echo " ($branch_name | $branch_status)";
+    else
+        echo "";
+    fi;
+
+}
+
+PS1=""$'\n'
+PS1+="%F{yellow}%n %b%F{magenta}%1~%f%b%F{green}$(git_branch) >>%b "$'\n'"\$ %F{white}"
+
+export CLICOLOR=1;
+export LSCOLORS=ExFxBxDxCxegedabagacad;
