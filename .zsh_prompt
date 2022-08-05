@@ -10,7 +10,4 @@ function git_branch() {
 }
 
 PS1=""$'\n'
-PS1+="%F{yellow}%n %b%F{magenta}%1~%f%b%F{green}$(git_branch) >>%b "$'\n'"\$ %F{white}"
-
-export CLICOLOR=1;
-export LSCOLORS=ExFxBxDxCxegedabagacad;
+PS1+="%F{yellow}%n %b%F{magenta}%1~%f%F{green}$(git_branch) %F{green}>>%b "$'\n'"\$ %F{white}"
