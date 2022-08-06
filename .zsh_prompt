@@ -1,13 +1,93 @@
-function git_branch() {
-    branch_status=$(git branch 2>/dev/null -vv | sed -e '/^[^]/d' | grep -Eio '\[.\]' | sed 's/[][]//g')
-    branch_name=$(git branch 2>/dev/null | sed -e '/^[^*]/d'  | awk '{ print $2 }')
-    if [ -d .git ]; then
-        echo " ($branch_name | $branch_status)";
-    else
-        echo "";
-    fi;
+autoload -Uz vcs_info
+zstyle ':vcs_info:*' enable git svn
+
+precmd() {
+    vcs_info
+}
+
+function +vi-git-allinfo() {
+
+    ### Compare local changes to remote changes
+
+    ### git: Show +N/-N when your local branch is ahead-of or behind remote HEAD.
+    # Make sure you have added misc to your 'formats':  %m
+    local ahead behind
+    local -a gitstatus
+
+    # Exit early in case the worktree is on a detached HEAD
+    git rev-parse ${hook_com[branch]}@{upstream} >/dev/null 2>&1 || return 0
+
+    local -a ahead_and_behind=(
+        $(git rev-list --left-right --count HEAD...${hook_com[branch]}@{upstream} 2>/dev/null)
+    )
+
+    ahead=${ahead_and_behind[1]}
+    behind=${ahead_and_behind[2]}
+
+    (( $ahead )) && gitstatus+=( ": ahead ${ahead}" )
+    (( $behind )) && gitstatus+=( ": behind ${behind}" )
+
+    hook_com[misc]+=${(j:/:)gitstatus}
+
+    # Tracking the remote branch
+    ### git: Show remote branch name for remote-tracking branches
+    local remote
+
+    # Are we on a remote-tracking branch?
+    remote=${$(git rev-parse --verify ${hook_com[branch]}@{upstream} \
+        --symbolic-full-name 2>/dev/null)/refs\/remotes\/}
+
+    # The first test will show a tracking branch whenever there is one. The
+    # second test, however, will only show the remote branch's name if it
+    # differs from the local one.
+    if [[ -n ${remote} ]] ; then
+    # if [[ -n ${remote} && ${remote#*/} != ${hook_com[branch]} ]] ; then
+        hook_com[branch]="${hook_com[branch]} | ${remote}";
+    fi
+
+    ### Display the existence of files not yet known to VCS
+
+    ### git: Show marker (^) if there are untracked files in repository
+    # Make sure you have added staged to your 'formats':  %c
+    if [[ $(git rev-parse --is-inside-work-tree 2> /dev/null) == 'true' ]] && \
+        git status --porcelain | grep -q '^?? ' 2> /dev/null ; then
+        # This will show the marker if there are any untracked files in repo.
+        # If instead you want to show the marker only if there are untracked
+        # files in $PWD, use:
+        #[[ -n $(git ls-files --others --exclude-standard) ]] ; then
+        hook_com[staged]=' %F{red}^'
+    fi
 
 }
 
-PS1=""$'\n'
-PS1+="%F{yellow}%n %b%F{magenta}%1~%f%F{green}$(git_branch) %F{green}>>%b "$'\n'"\$ %F{white}"
+# Enable checking for (un)staged changes, enabling use of %u and %c
+zstyle ':vcs_info:*' enable git svn
+
+# Enable Debugging Mode
+# zstyle ':vcs_info:*+*:*' debug true
+
+zstyle ':vcs_info:git*:*' get-revision true
+zstyle ':vcs_info:git*:*' check-for-changes true
+zstyle ':vcs_info:git*+set-message:*' hooks git-allinfo
+
+# Set custom strings for an unstaged vcs repo changes (*) and staged changes (+)
+zstyle ':vcs_info:*' unstagedstr ' %F{red}*'
+zstyle ':vcs_info:*' stagedstr ' %F{green}+'
+
+# Set the format of the Git information for vcs_info
+zstyle ':vcs_info:(sv[nk]|bzr):*' branchformat '%b | %r'
+zstyle ':vcs_info:git:*' formats       ' (%b %m%u%c%F{green})'
+zstyle ':vcs_info:git:*' actionformats ' (%a %b %m%u%c)'
+
+# Enable substitution in the prompt.
+setopt prompt_subst
+
+# Config for the prompt.
+PROMPT=''$'\n'
+PROMPT+='%F{yellow}%n %b%F{magenta}%1~%f%F{green}%b${vcs_info_msg_0_} >>%b '$'%F{white}\n''\$ '
+
+
+# Format Needed :
+# Prasuk Documents (master | origin/master : ahead 2 *) >>
+
+export PROMPT;
