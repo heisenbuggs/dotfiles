@@ -70,7 +70,7 @@ ENABLE_CORRECTION="true"
 # Custom plugins may be added to $ZSH_CUSTOM/plugins/
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
-plugins=(brew git)
+plugins=(brew git copyfile zsh-autosuggestions)
 
 source $ZSH/oh-my-zsh.sh
 
@@ -95,5 +95,9 @@ source $ZSH/oh-my-zsh.sh
 # plugins, and themes. Aliases can be placed here, though oh-my-zsh
 # users are encouraged to define aliases within the ZSH_CUSTOM folder.
 # For a full list of active aliases, run `alias`.
+
 source ~/.zsh_prompt
 source ~/.aliases
+
+export PATH="$HOME/.jenv/bin:$PATH"
+eval "$(jenv init -)"
