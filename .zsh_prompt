@@ -24,10 +24,10 @@ function +vi-git-allinfo() {
     ahead=${ahead_and_behind[1]}
     behind=${ahead_and_behind[2]}
 
-    (( $ahead )) && gitstatus+=( ": ahead ${ahead}" )
-    (( $behind )) && gitstatus+=( ": behind ${behind}" )
+    (( $ahead )) && gitstatus+=( " : ahead ${ahead}" )
+    (( $behind )) && gitstatus+=( " : behind ${behind}" )
 
-    hook_com[misc]+=${(j:/:)gitstatus}
+    hook_com[misc]+=${(j::)gitstatus}
 
     # Tracking the remote branch
     ### git: Show remote branch name for remote-tracking branches
@@ -55,7 +55,7 @@ function +vi-git-allinfo() {
         # If instead you want to show the marker only if there are untracked
         # files in $PWD, use:
         #[[ -n $(git ls-files --others --exclude-standard) ]] ; then
-        hook_com[staged]=' %F{red}^'
+        hook_com[staged]=' %F{red}*'
     fi
 
 }
@@ -76,8 +76,8 @@ zstyle ':vcs_info:*' stagedstr ' %F{green}+'
 
 # Set the format of the Git information for vcs_info
 zstyle ':vcs_info:(sv[nk]|bzr):*' branchformat '%b | %r'
-zstyle ':vcs_info:git:*' formats       ' (%b %m%u%c%F{green})'
-zstyle ':vcs_info:git:*' actionformats ' (%a %b %m%u%c)'
+zstyle ':vcs_info:git:*' formats       ' (%b%m%u%c%F{green})'
+zstyle ':vcs_info:git:*' actionformats ' (%a %b%m%u%c)'
 
 # Enable substitution in the prompt.
 setopt prompt_subst
