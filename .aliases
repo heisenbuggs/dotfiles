@@ -8,21 +8,21 @@ alias .....="cd ../../../.."
 alias dl="cd ~/Downloads"
 alias dt="cd ~/Desktop"
 alias dc="cd ~/Documents"
-alias p="cd ~/Documents/projects"
 alias home="cd ~"
 
 # GIT
 alias g="git"
-alias gs="git status"
+alias gst="git status"
 alias gd="git diff"
 alias gb="git branch"
-alias gm="git checkout master"
+alias gm="git merge"
+alias gco="git checkout"
+alias gll="git log --prett=ormat:'%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]' --decorate --numstat"
+alias gls="git log --prett=ormat:'%C(yellow)%h%Cred%d\\ %Creset%s%Cblue\\ [%cn]' --decorate"
+alias graph="git log --oneline --graph --decorate"
+alias conflicts="git diff --name-only --diff-filte="
 
 # UTILS
 alias c="clear" # clear your terminal screen
 alias ip="curl icanhazip.com" # Your public IP address
 alias ll="ls -al" # List all files in current directory in long list format
-
-# SHOW/HIDE HIDDEN FILES
-alias showhidden="defaults write com.apple.finder AppleShowAllFiles -bool true && killall Finder"
-alias hidehidden="defaults write com.apple.finder AppleShowAllFiles -bool false && killall Finder"
